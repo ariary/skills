@@ -1,0 +1,46 @@
+{
+  "name": "qonto-skills",
+  "version": "0.1.0",
+  "description": "Agent Skills for business banking and financial tools on Qonto, built on the Qonto MCP server. For SMEs, founders, finance teams and accountants: transactions and statements, client invoices, quotes and credit notes, cards and limits, spend requests, attachments and reconciliation.",
+  "author": {
+    "name": "Qonto",
+    "url": "https://qonto.com"
+  },
+  "homepage": "https://qonto.com",
+  "repository": "https://github.com/qonto/skills",
+  "license": "MIT",
+  "keywords": [
+    "qonto",
+    "business-banking",
+    "financial-tools",
+    "fintech",
+    "sme",
+    "smb",
+    "startup",
+    "founder",
+    "cfo",
+    "accountant",
+    "bookkeeping",
+    "invoicing",
+    "quotes",
+    "cards",
+    "transactions",
+    "reconciliation",
+    "accounting",
+    "api"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Qonto",
+    "shortDescription": "Business banking on Qonto",
+    "longDescription": "Agent Skills for business banking and financial tools on Qonto, built on the Qonto MCP server. For SMEs, founders, finance teams and accountants: transactions and statements, client invoices, quotes and credit notes, cards and limits, spend requests, attachments and reconciliation.",
+    "developerName": "Qonto",
+    "category": "Finance",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://docs.qonto.com",
+    "privacyPolicyURL": "https://legal.qonto.com/en#template-6uiwuhdde",
+    "termsOfServiceURL": "https://legal.qonto.com/en"
+  }
+}
