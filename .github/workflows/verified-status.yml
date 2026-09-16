@@ -1,0 +1,67 @@
+# Receives private review verdicts from skills-gate and publishes only the result on the matching PR head.
+name: verified status
+
+on:
+  repository_dispatch:
+    types: [qonto-verified]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: verified-status-${{ github.event.client_payload.pr }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Validate verdict and publish status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload.client_payload || {};
+            const prNumber = Number(payload.pr);
+            const sha = String(payload.sha || '');
+            const states = new Set(['error', 'failure', 'pending', 'success']);
+
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('client_payload.pr must be a positive integer');
+              return;
+            }
+            if (!/^[0-9a-f]{40}$/.test(sha)) {
+              core.setFailed('client_payload.sha must be a full commit SHA');
+              return;
+            }
+            if (!states.has(payload.state)) {
+              core.setFailed('client_payload.state must be error, failure, pending, or success');
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+            if (pr.state !== 'open' || pr.head.sha !== sha) {
+              core.setFailed('commit is not the current head of the open pull request');
+              return;
+            }
+
+            const descriptions = {
+              error: 'Private review could not complete',
+              failure: 'Private review requested changes',
+              pending: 'Private review in progress',
+              success: 'Private review approved',
+            };
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha,
+              state: payload.state,
+              context: 'qonto/verified',
+              description: descriptions[payload.state],
+            });
